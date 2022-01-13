@@ -61,6 +61,7 @@ class AuthRepository {
   static Future<bool> createChecklistRepository(
       String token, String name) async {
     final headers = {
+      'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
 
@@ -88,8 +89,8 @@ class AuthRepository {
 
     final result = await http.delete(Uri.parse(baseUrl + checklist + '/$id'),
         headers: headers);
-    print(result.body);
-    if (result.statusCode == 2000) {
+    print(result);
+    if (result.statusCode == 200) {
       return true;
     } else {
       return false;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tes_bts_id/model/checklist_model.dart';
 import 'package:tes_bts_id/preference_helper.dart';
+import 'package:tes_bts_id/view/login.dart';
 import 'package:tes_bts_id/viewmodel/auth_repository.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -60,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
               if (result == true) {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text('Success Add Data')));
+                getChecklist();
               } else {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text('Failed Add Data')));
@@ -70,6 +72,13 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         appBar: AppBar(
           title: Text(widget.title),
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (_) => LoginPage()));
+            },
+            child: const Icon(Icons.arrow_back),
+          ),
         ),
         body: SafeArea(
           child: isLoading == true && data.isEmpty
@@ -95,7 +104,18 @@ class _MyHomePageState extends State<MyHomePage> {
                           onChanged: (value) {}),
                       title: Text(data[index].name!),
                       trailing: GestureDetector(
-                        onTap: () {},
+                        onTap: () async {
+                          final result =
+                              await AuthRepository.deleteChecklistRepository(
+                                  tokenNew, data[index].id!);
+                          if (result == true) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("success delete data")));
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("failed delete data")));
+                          }
+                        },
                         child: const Icon(Icons.delete),
                       ),
                     );
