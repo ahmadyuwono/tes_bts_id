@@ -18,6 +18,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late PreferencesHelper _preferencesHelper;
   List<Checklist> data = [];
   final _controller = TextEditingController();
+  String tokenNew = '';
 
   @override
   void initState() {
@@ -32,8 +33,8 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       isLoading = true;
     });
-    final token = await _preferencesHelper.getToken();
-    AuthRepository.getChecklistRepository(token).then((value) {
+    tokenNew = await _preferencesHelper.getToken();
+    AuthRepository.getChecklistRepository(tokenNew).then((value) {
       setState(() {
         if (value.data != null) {
           data = value.data!;
@@ -51,7 +52,20 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () async {
+            if (_controller.text.isNotEmpty) {
+              final result = await AuthRepository.createChecklistRepository(
+                  tokenNew, _controller.text);
+              print(result);
+              if (result == true) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('Success Add Data')));
+              } else {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('Failed Add Data')));
+              }
+            }
+          },
           child: const Icon(Icons.add),
         ),
         appBar: AppBar(
@@ -65,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
               : ListView.builder(
                   itemCount: data.length + 1,
                   itemBuilder: (context, index) {
-                    if (index == 0) {
+                    if (index == data.length) {
                       return TextFormField(
                         controller: _controller,
                       );

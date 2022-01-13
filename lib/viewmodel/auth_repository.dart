@@ -57,4 +57,42 @@ class AuthRepository {
     print(result.body);
     return ChecklistModel.fromJson(jsonDecode(result.body));
   }
+
+  static Future<bool> createChecklistRepository(
+      String token, String name) async {
+    final headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    print(token);
+    final body = {
+      'name': '$name',
+    };
+
+    final result = await http.post(Uri.parse(baseUrl + checklist),
+        headers: headers, body: jsonEncode(body));
+    print(result.statusCode);
+    if (result.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static Future<bool> deleteChecklistRepository(String token, int id) async {
+    final headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    print(token);
+
+    final result = await http.delete(Uri.parse(baseUrl + checklist + '/$id'),
+        headers: headers);
+    print(result.body);
+    if (result.statusCode == 2000) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
