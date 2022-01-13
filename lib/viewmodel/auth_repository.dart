@@ -1,0 +1,60 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+import 'package:tes_bts_id/constants.dart';
+import 'package:tes_bts_id/model/auth_model.dart';
+import 'package:tes_bts_id/model/checklist_model.dart';
+
+class AuthRepository {
+  static Future<AuthModel> loginRepository(
+      String password, String username) async {
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+
+    final body = {
+      'password': '$password',
+      'username': '$username',
+    };
+
+    final result = await http.post(Uri.parse(baseUrl + login),
+        headers: headers, body: jsonEncode(body));
+    return AuthModel.fromJson(jsonDecode(result.body));
+  }
+
+  static Future<AuthModel> registerRepository(
+      String password, String username, String email) async {
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+
+    final body = {
+      'email': '$email',
+      'password': '$password',
+      'username': '$username',
+    };
+
+    final result = await http.post(Uri.parse(baseUrl + register),
+        headers: headers, body: jsonEncode(body));
+    print(result);
+    return AuthModel.fromJson(jsonDecode(result.body));
+  }
+
+  static Future<ChecklistModel> getChecklistRepository(String token) async {
+    final headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    print(token);
+    // final body = {
+    //   'email': '$email',
+    //   'password': '$password',
+    //   'username': '$username',
+    // };
+
+    final result =
+        await http.get(Uri.parse(baseUrl + checklist), headers: headers);
+    print(result.body);
+    return ChecklistModel.fromJson(jsonDecode(result.body));
+  }
+}
